@@ -9,9 +9,6 @@ import (
 // Allowed values are "individual", "corporation".
 type RecipientType string
 
-// BankAccountStatus is the list of allowed values for the bank account's status.
-// Allowed values are "new", "verified", "validated", "errored".
-type BankAccountStatus string
 
 // RecipientParams is the set of parameters that can be used when creating or updating recipients.
 // For more details see https://stripe.com/docs/api#create_recipient and https://stripe.com/docs/api#update_recipient.
@@ -32,10 +29,6 @@ type RecipientListParams struct {
 	Verified bool
 }
 
-// BankAccountParams is the set of parameters that can be used when creating or updating a bank account.
-type BankAccountParams struct {
-	Token, Country, Routing, Account string
-}
 
 // Recipient is the resource representing a Stripe recipient.
 // For more details see https://stripe.com/docs/api#recipients.
@@ -53,22 +46,12 @@ type Recipient struct {
 	DefaultCard *Card             `json:"default_card"`
 }
 
-// BankAccount represents a Stripe bank account.
-type BankAccount struct {
-	ID          string            `json:"id"`
-	Name        string            `json:"bank_name"`
-	Country     string            `json:"country"`
-	Currency    Currency          `json:"currency"`
-	LastFour    string            `json:"last4"`
-	Fingerprint string            `json:"fingerprint"`
-	Status      BankAccountStatus `json:"status"`
-}
 
 // AppendDetails adds the bank account's details to the query string values.
 func (b *BankAccountParams) AppendDetails(values *url.Values) {
-	values.Add("bank_account[country]", b.Country)
-	values.Add("bank_account[routing_number]", b.Routing)
-	values.Add("bank_account[account_number]", b.Account)
+	values.Add("bank_account[country]", b.CountryCode)
+	values.Add("bank_account[routing_number]", b.RoutingNumber)
+	values.Add("bank_account[account_number]", b.AccountNumber)
 }
 
 // UnmarshalJSON handles deserialization of a Recipient.
