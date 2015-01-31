@@ -16,6 +16,7 @@ type Client struct {
 
 func (c Client) New(customer_id string, params *stripe.BankAccountParams) (*stripe.BankAccount, error) {
 	var body *url.Values
+	var commonParams *stripe.Params
 	if params != nil {
 		body = &url.Values{
 			"bank_account[routing_number]": {params.RoutingNumber},
@@ -25,12 +26,13 @@ func (c Client) New(customer_id string, params *stripe.BankAccountParams) (*stri
 
 	}
 	bankAccount := &stripe.BankAccount{}
-	err := c.B.Call("POST", "/customers/"+customer_id+"/bank_accounts", c.Key, body, bankAccount)
+	commonParams = &params.Params
+	err := c.B.Call("POST", "/customers/"+customer_id+"/bank_accounts", c.Key, body, commonParams, bankAccount)
 	if err != nil {
 		return nil, err
 	}
 	return bankAccount, nil
 }
 func getC() Client {
-	return Client{stripe.GetBackend(), stripe.Key}
+	return Client{stripe.GetBackend(stripe.APIBackend), stripe.Key}
 }
